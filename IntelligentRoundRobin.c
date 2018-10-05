@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<stdlib.h>
 #include<math.h>
 
 
@@ -42,7 +43,7 @@ process display(process p1)
   printf("The priority of the current process is %d\n",p1.priority);
     printf("The priority of the current process is %d\n",p1.priority_component);
       printf("The priority of the current process is %d\n",p1.shortness_component);
-        printf("The priority of the current process is %d\n",p1.ITS);
+        printf("The   ITS of the current process is %d\n",p1.ITS);
 
 }
 
@@ -68,7 +69,6 @@ void initialAssignment(process ProcessArray[],int n)
 
 
 
-  printf("n is %d\n",n);
   int highest_priority;
   int min=0;
 
@@ -80,7 +80,7 @@ void initialAssignment(process ProcessArray[],int n)
     if(ProcessArray[i].priority < ProcessArray[min].priority)
     {
       min=i;
-      printf("%d",min);
+      //printf("%d",min);
     }
     
     else
@@ -146,7 +146,7 @@ int  checkArray(int Array[], int n)
    if(Array[i]==1)
    {
      check=1;
-     break;
+     return check;
    }
 
    else
@@ -180,6 +180,7 @@ int main()
   for(int i=0;i<n;i++){
     ready[i]=1;
   }
+
   process processArray[n];
 
 
@@ -195,11 +196,25 @@ int main()
   
   initialAssignment(processArray,n);
 
+
+  for(int i=0;i<n;i++)
+  {
+    display(processArray[i]);
+  }
+
+
+
+
   int round=0;
+  int x=checkArray(ready,n);
+  //printf("%d",x);
+
 
   while(checkArray(ready,n)==1){
+
     for(int i=0;i<n;i++){
 
+      
 
       if(i==0)
       {
@@ -207,12 +222,16 @@ int main()
         if(processArray[i].shortness_component==0)
         {
           timeq[i][round]=(int)ceil((double)(processArray[i].ITS/2));
+          printf("\n timeq=%d",timeq[i][round]);
 
         }
 
         else
         {
+
           timeq[i][round]=processArray[i].ITS;
+                    printf("\n timeq=%d",timeq[i][round]);
+
         }
 
 
@@ -221,32 +240,63 @@ int main()
 
       else
       {
+                
+
 
          if(processArray[i].shortness_component==0)
         {
           timeq[i][round]=(int)ceil((double)(timeq[i-1][round]+ timeq[i-1][round]/2));
+                    printf("\n timeq=%d",timeq[i][round]);
+
         }
 
         else
         {
+          //printf("\nefefegh");
           timeq[i][round]=2*timeq[i-1][round];
+                    printf("\n timeq2=%d",timeq[i][round]);
+
         }
+
         
-    }
-      if(processArray[i].remaining_time>0){
-      processArray[i].remaining_time=processArray[i].remaining_time- timeq[i][round];
+      }
+      printf("\n out timeq%d",timeq[i][round]);
+
+               
+
+
+      
+
+      if(processArray[i].remaining_time-timeq[i][round]<=2 && processArray[i].remaining_time-timeq[i][round]>=0)
+      {
+        timeq[i][round]=abs(processArray[i].remaining_time-timeq[i][round]);
+        printf("\nbakchod %d",timeq[i][round]);
       }
 
-      if(processArray[i].remaining_time-timeq[i][round]<=2)
+      if(processArray[i].remaining_time>=0){
+
+        printf("\np%d %d\n",processArray[i].remaining_time,timeq[i][round]);
+  
+      processArray[i].remaining_time=processArray[i].remaining_time- timeq[i][round];
+      printf("\nrem time=%d",processArray[i].remaining_time);
+      }
+      if(processArray[i].remaining_time<0){
+        processArray[i].remaining_time=0;
+      }
+
+      if(processArray[i].remaining_time==0)
       {
-        timeq[i][round]=processArray[i].remaining_time;
+        ready[i]=0;
       }
       
     }
 
-
     round++;
   }
+
+
+
+  
 
 
 
